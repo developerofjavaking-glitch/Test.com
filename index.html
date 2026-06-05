@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SocialGenius AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f1a;
+  --card: #131926;
+  --card2: #1a2235;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --text: #edf0f7;
+  --muted: #7b87a0;
+  --ac: #ff4040;
+  --ac-glow: rgba(255,64,64,0.25);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* subtle dot grid bg */
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+  pointer-events: none;
+}
+
+.wrap { position: relative; z-index: 1; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(11,15,26,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.25rem;
+  height: 58px;
+  display: flex; align-items: center;
+}
+.logo {
+  font-weight: 900; font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+.logo span { color: var(--ac); }
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 2.5rem 1.25rem 1.5rem;
+}
+.hero h1 {
+  font-size: clamp(1.9rem, 6vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.75rem;
+}
+.hero h1 .hl {
+  color: var(--ac);
+}
+.hero p {
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* ── PLATFORM PICKER ── */
+.platform-section {
+  padding: 0 1rem 1.5rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  margin-bottom: 12px;
+  padding-left: 2px;
+}
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+@media (max-width: 480px) {
+  .platform-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.pcard {
+  background: var(--card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px 8px 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 7px;
+  -webkit-tap-highlight-color: transparent;
+}
+.pcard:hover { border-color: var(--border2); background: var(--card2); }
+.pcard.active {
+  border-color: var(--ac);
+  background: rgba(255,64,64,0.08);
+  box-shadow: 0 0 0 3px var(--ac-glow);
+}
+.pcard i {
+  font-size: 22px;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.pcard.active i { color: var(--ac); }
+.pcard span {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.pcard.active span { color: var(--text); }
+
+/* platform color overrides when active */
+.pcard[data-p="yt"].active { --ac:#ff4040; --ac-glow:rgba(255,64,64,0.2); border-color:#ff4040; background:rgba(255,64,64,0.07); }
+.pcard[data-p="fb"].active { --ac:#1877f2; --ac-glow:rgba(24,119,242,0.2); border-color:#1877f2; background:rgba(24,119,242,0.07); }
+.pcard[data-p="ig"].active { --ac:#e1306c; --ac-glow:rgba(225,48,108,0.2); border-color:#e1306c; background:rgba(225,48,108,0.07); }
+.pcard[data-p="tt"].active { --ac:#69c9d0; --ac-glow:rgba(105,201,208,0.2); border-color:#69c9d0; background:rgba(105,201,208,0.07); }
+.pcard[data-p="tw"].active { --ac:#1da1f2; --ac-glow:rgba(29,161,242,0.2); border-color:#1da1f2; background:rgba(29,161,242,0.07); }
+
+.pcard[data-p="yt"].active i { color:#ff4040; }
+.pcard[data-p="fb"].active i { color:#1877f2; }
+.pcard[data-p="ig"].active i { color:#e1306c; }
+.pcard[data-p="tt"].active i { color:#69c9d0; }
+.pcard[data-p="tw"].active i { color:#1da1f2; }
+
+/* ── FORM AREA ── */
+.form-area {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 1rem 1.5rem;
+}
+.form-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.form-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--gen-color, #ff4040) 50%, transparent 100%);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+@media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 7px; }
+.field label {
+  font-size: 12px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--muted);
+}
+.field input, .field select {
+  background: var(--card2);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 13px 14px;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  outline: none;
+  appearance: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field input::placeholder { color: var(--muted); font-weight: 400; }
+.field input:focus, .field select:focus {
+  border-color: var(--gen-color, #ff4040);
+  box-shadow: 0 0 0 3px rgba(255,64,64,0.15);
+}
+.field select { cursor: pointer; }
+.field select option { background: #1a2235; }
+
+.full-row { grid-column: 1 / -1; }
+
+.gen-btn {
+  width: 100%; margin-top: 4px;
+  padding: 16px;
+  border: none; border-radius: var(--radius-sm);
+  background: var(--gen-color, #ff4040);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px; font-weight: 900;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 4px 24px var(--gen-glow, rgba(255,64,64,0.3));
+  -webkit-tap-highlight-color: transparent;
+}
+.gen-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.gen-btn:active { transform: translateY(0); filter: brightness(0.95); }
+.gen-btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.gen-btn i { font-size: 17px; }
+
+/* ── LOADER ── */
+.loader-wrap {
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 3.5rem 1rem;
+  gap: 16px;
+}
+.spin-ring {
+  width: 52px; height: 52px;
+  border: 4px solid var(--border2);
+  border-top-color: var(--gen-color, #ff4040);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-msg {
+  color: var(--muted); font-size: 14px; font-weight: 600;
+  animation: blink 1.6s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+/* ── RESULTS ── */
+.results-wrap {
+  display: none;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem 4rem;
+}
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 620px) { .results-grid { grid-template-columns: 1fr; } }
+
+.rcard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  transition: border-color 0.2s;
+}
+.rcard:hover { border-color: var(--border2); }
+.rcard.span2 { grid-column: span 2; }
+@media (max-width: 620px) { .rcard.span2 { grid-column: span 1; } }
+
+.rcard-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px;
+}
+.rcard-title {
+  font-size: 12px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--muted);
+  display: flex; align-items: center; gap: 8px;
+}
+.dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gen-color, #ff4040);
+  flex-shrink: 0;
+}
+.cbtn {
+  background: var(--card2); border: 1px solid var(--border2);
+  color: var(--muted); border-radius: 7px;
+  padding: 5px 10px; cursor: pointer; font-size: 12px; font-weight: 700;
+  font-family: 'Nunito', sans-serif;
+  transition: all 0.18s; display: flex; align-items: center; gap: 5px;
+}
+.cbtn:hover { color: var(--text); border-color: rgba(255,255,255,0.28); }
+
+/* List items (titles, hooks, tweets) */
+.list-items { display: flex; flex-direction: column; gap: 7px; }
+.list-item {
+  background: var(--card2); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 11px 13px;
+  font-size: 14px; font-weight: 600; line-height: 1.4;
+  cursor: pointer; transition: all 0.18s;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+}
+.list-item:hover { border-color: var(--gen-color, #ff4040); background: rgba(255,255,255,0.03); }
+.list-item .ci { color: var(--muted); font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+
+/* Idea cards */
+.idea-list { display: flex; flex-direction: column; gap: 8px; }
+.idea-item {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 13px;
+  font-size: 13px; font-weight: 600; line-height: 1.5;
+}
+.idea-num {
+  font-size: 10px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--gen-color, #ff4040);
+  margin-bottom: 4px;
+}
+
+/* Textarea */
+.out-ta {
+  width: 100%;
+  background: var(--card2); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 12px 13px;
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px; font-weight: 600; line-height: 1.65;
+  resize: vertical; outline: none;
+  transition: border-color 0.2s;
+}
+.out-ta:focus { border-color: var(--gen-color, #ff4040); }
+
+/* Tags */
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 5px 11px;
+  font-size: 12px; font-weight: 700; color: var(--muted);
+  cursor: pointer; transition: all 0.15s;
+}
+.tag:hover { border-color: var(--gen-color, #ff4040); color: var(--text); }
+
+/* Hashtags */
+.hash-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.hash-item {
+  background: var(--card2); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 6px 13px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  color: var(--gen-color, #ff4040);
+  transition: all 0.15s;
+}
+.hash-item:hover { background: rgba(255,64,64,0.1); }
+
+/* Char counter */
+.char-info { font-size: 11px; color: var(--muted); margin-top: 6px; text-align: right; font-weight: 700; }
+.char-info.warn { color: #f59e0b; }
+.char-info.over { color: #ef4444; }
+
+/* ── no-selection state ── */
+.no-sel {
+  text-align: center; padding: 2.5rem 1rem;
+  color: var(--muted); font-size: 15px; font-weight: 700;
+}
+.no-sel i { font-size: 2.5rem; display: block; margin-bottom: 10px; opacity: 0.3; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 20px; z-index: 999;
+  background: #10b981; color: white;
+  padding: 12px 20px; border-radius: 12px;
+  font-size: 14px; font-weight: 800;
+  transform: translateY(12px); opacity: 0;
+  transition: all 0.28s; pointer-events: none;
+  max-width: calc(100vw - 40px);
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* hidden api key field */
+#hidden-api { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Social<span>Genius</span> AI</div>
+</nav>
+<!-- hidden api key stored here -->
+<input type="hidden" id="visible-api" value="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">
+
+<!-- HERO -->
+<div class="hero">
+  <h1>AI Content for<br><span class="hl" id="hero-hl">Every Platform</span></h1>
+  <p>Pick a platform, enter your topic, and get ready-to-use content in seconds.</p>
+</div>
+
+<!-- PLATFORM PICKER -->
+<div class="platform-section">
+  <div class="section-label">Choose a platform</div>
+  <div class="platform-grid">
+    <div class="pcard" data-p="yt" onclick="selectPlatform('yt')">
+      <i class="fa-brands fa-youtube" style="color:#ff4040"></i>
+      <span>YouTube</span>
+    </div>
+    <div class="pcard" data-p="fb" onclick="selectPlatform('fb')">
+      <i class="fa-brands fa-facebook" style="color:#1877f2"></i>
+      <span>Facebook</span>
+    </div>
+    <div class="pcard" data-p="ig" onclick="selectPlatform('ig')">
+      <i class="fa-brands fa-instagram" style="color:#e1306c"></i>
+      <span>Instagram</span>
+    </div>
+    <div class="pcard" data-p="tt" onclick="selectPlatform('tt')">
+      <i class="fa-brands fa-tiktok" style="color:#69c9d0"></i>
+      <span>TikTok</span>
+    </div>
+    <div class="pcard" data-p="tw" onclick="selectPlatform('tw')">
+      <i class="fa-brands fa-x-twitter" style="color:#1da1f2"></i>
+      <span>Twitter</span>
+    </div>
+  </div>
+</div>
+
+<!-- FORM -->
+<div class="form-area" id="form-area" style="display:none">
+  <div class="form-card" id="form-card">
+    <div class="form-row">
+      <div class="field full-row">
+        <label id="topic-lbl">Topic / Idea</label>
+        <input type="text" id="topic-in" placeholder="Enter your topic..." />
+      </div>
+      <div class="field">
+        <label>Tone</label>
+        <select id="tone-sel">
+          <option value="Exciting & Viral">🔥 Exciting & Viral</option>
+          <option value="Educational & Clear">🎓 Educational</option>
+          <option value="Funny & Entertaining">😂 Funny</option>
+          <option value="Calm & Aesthetic">✨ Calm & Aesthetic</option>
+          <option value="Inspirational">💪 Inspirational</option>
+        </select>
+      </div>
+      <div class="field">
+        <label id="extra-lbl">Audience</label>
+        <input type="text" id="extra-in" placeholder="e.g. beginners, teens..." />
+      </div>
+    </div>
+    <button class="gen-btn" id="gen-btn" onclick="generate()">
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      <span id="gen-txt">Generate Content</span>
+    </button>
+  </div>
+</div>
+
+<!-- NO SELECTION STATE -->
+<div class="no-sel" id="no-sel">
+  <i class="fa-solid fa-hand-pointer"></i>
+  Select a platform above to get started
+</div>
+
+<!-- LOADER -->
+<div class="loader-wrap" id="loader">
+  <div class="spin-ring" id="spin-ring"></div>
+  <div class="loader-msg" id="loader-msg">Creating your content...</div>
+</div>
+
+<!-- RESULTS -->
+<div class="results-wrap" id="results">
+
+  <!-- YouTube -->
+  <div id="res-yt" style="display:none">
+    <div class="results-grid">
+      <div class="rcard span2">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Viral Titles</div></div>
+        <div class="list-items" id="yt-titles"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Thumbnail Ideas</div></div>
+        <div class="idea-list" id="yt-thumbs"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Script Outline</div>
+          <button class="cbtn" onclick="cta('yt-script')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="yt-script" rows="9" readonly></textarea>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>SEO Description</div>
+          <button class="cbtn" onclick="cta('yt-desc')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="yt-desc" rows="7" readonly></textarea>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>SEO Tags</div>
+          <button class="cbtn" onclick="ctaTagsRaw('yt-tags-raw')"><i class="fa-regular fa-copy"></i> Copy All</button>
+        </div>
+        <textarea id="yt-tags-raw" style="display:none" readonly></textarea>
+        <div class="tags-wrap" id="yt-tags"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Facebook -->
+  <div id="res-fb" style="display:none">
+    <div class="results-grid">
+      <div class="rcard span2">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Post Hooks</div></div>
+        <div class="list-items" id="fb-hooks"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Content Ideas</div></div>
+        <div class="idea-list" id="fb-ideas"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Engagement Questions</div>
+          <button class="cbtn" onclick="cta('fb-coms')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="fb-coms" rows="6" readonly></textarea>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Full Post Caption</div>
+          <button class="cbtn" onclick="cta('fb-cap')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="fb-cap" rows="7" readonly></textarea>
+        <div class="char-info" id="fb-char"></div>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Hashtags</div>
+          <button class="cbtn" onclick="ctaHash('fb-hash')"><i class="fa-regular fa-copy"></i> Copy All</button>
+        </div>
+        <div class="hash-list" id="fb-hash"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Instagram -->
+  <div id="res-ig" style="display:none">
+    <div class="results-grid">
+      <div class="rcard span2">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Caption Variations</div></div>
+        <div class="list-items" id="ig-caps"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Reel / Post Ideas</div></div>
+        <div class="idea-list" id="ig-ideas"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Bio Link CTA</div>
+          <button class="cbtn" onclick="cta('ig-bio')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="ig-bio" rows="4" readonly></textarea>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Full Caption + CTA</div>
+          <button class="cbtn" onclick="cta('ig-full')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="ig-full" rows="7" readonly></textarea>
+        <div class="char-info" id="ig-char"></div>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Hashtags (30 max)</div>
+          <button class="cbtn" onclick="ctaHash('ig-hash')"><i class="fa-regular fa-copy"></i> Copy All</button>
+        </div>
+        <div class="hash-list" id="ig-hash"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TikTok -->
+  <div id="res-tt" style="display:none">
+    <div class="results-grid">
+      <div class="rcard span2">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Hook Lines (first 3 sec)</div></div>
+        <div class="list-items" id="tt-hooks"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Video Concepts</div></div>
+        <div class="idea-list" id="tt-concepts"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Music / Sound Mood</div>
+          <button class="cbtn" onclick="cta('tt-sounds')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="tt-sounds" rows="5" readonly></textarea>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>TikTok Caption</div>
+          <button class="cbtn" onclick="cta('tt-cap')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="tt-cap" rows="4" readonly></textarea>
+        <div class="char-info" id="tt-char"></div>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Hashtags</div>
+          <button class="cbtn" onclick="ctaHash('tt-hash')"><i class="fa-regular fa-copy"></i> Copy All</button>
+        </div>
+        <div class="hash-list" id="tt-hash"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Twitter/X -->
+  <div id="res-tw" style="display:none">
+    <div class="results-grid">
+      <div class="rcard span2">
+        <div class="rcard-head"><div class="rcard-title"><div class="dot"></div>Tweet Variations</div></div>
+        <div class="list-items" id="tw-tweets"></div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Thread Outline</div>
+          <button class="cbtn" onclick="cta('tw-thread')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="tw-thread" rows="9" readonly></textarea>
+      </div>
+      <div class="rcard">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Reply Hooks</div>
+          <button class="cbtn" onclick="cta('tw-replies')"><i class="fa-regular fa-copy"></i> Copy</button>
+        </div>
+        <textarea class="out-ta" id="tw-replies" rows="9" readonly></textarea>
+      </div>
+      <div class="rcard span2">
+        <div class="rcard-head">
+          <div class="rcard-title"><div class="dot"></div>Hashtags & Topics</div>
+          <button class="cbtn" onclick="ctaHash('tw-hash')"><i class="fa-regular fa-copy"></i> Copy All</button>
+        </div>
+        <div class="hash-list" id="tw-hash"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /results-wrap -->
+
+</div><!-- /wrap -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const PLATFORM = {
+  yt: { color:'#ff4040', glow:'rgba(255,64,64,0.3)', heroHl:'YouTube', topicLbl:'Video Topic / Idea', extraLbl:'Target Audience', extraPH:'e.g. beginners, age 18-35', btnTxt:'Generate YouTube Content' },
+  fb: { color:'#1877f2', glow:'rgba(24,119,242,0.3)', heroHl:'Facebook', topicLbl:'Post Topic / Idea', extraLbl:'Target Audience', extraPH:'e.g. entrepreneurs, parents', btnTxt:'Generate Facebook Content' },
+  ig: { color:'#e1306c', glow:'rgba(225,48,108,0.3)', heroHl:'Instagram', topicLbl:'Post / Reel Topic', extraLbl:'Niche / Theme', extraPH:'e.g. beauty, fitness, travel', btnTxt:'Generate Instagram Content' },
+  tt: { color:'#69c9d0', glow:'rgba(105,201,208,0.3)', heroHl:'TikTok', topicLbl:'Video / Trend Topic', extraLbl:'Creator Style', extraPH:'e.g. POV, tutorial, storytime', btnTxt:'Generate TikTok Content' },
+  tw: { color:'#1da1f2', glow:'rgba(29,161,242,0.3)', heroHl:'Twitter / X', topicLbl:'Tweet Topic / Opinion', extraLbl:'Thread Length', extraPH:'e.g. 5 tweets, 10 tweets', btnTxt:'Generate Twitter Content' }
+};
+
+let curP = null;
+
+function selectPlatform(p) {
+  curP = p;
+  const cfg = PLATFORM[p];
+
+  // highlight card
+  document.querySelectorAll('.pcard').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.pcard[data-p="${p}"]`).classList.add('active');
+
+  // hero
+  document.getElementById('hero-hl').textContent = cfg.heroHl;
+  document.getElementById('hero-hl').style.color = cfg.color;
+
+  // form labels
+  document.getElementById('topic-lbl').textContent = cfg.topicLbl;
+  document.getElementById('extra-lbl').textContent = cfg.extraLbl;
+  document.getElementById('extra-in').placeholder = cfg.extraPH;
+  document.getElementById('gen-txt').textContent = cfg.btnTxt;
+
+  // form accent color
+  const fc = document.getElementById('form-card');
+  fc.style.setProperty('--gen-color', cfg.color);
+  fc.style.setProperty('--gen-glow', cfg.glow);
+
+  // dots color
+  document.querySelectorAll('.dot').forEach(d => d.style.background = cfg.color);
+  document.querySelectorAll('.hash-item').forEach(h => h.style.color = cfg.color);
+
+  // gen btn colors
+  const gb = document.getElementById('gen-btn');
+  gb.style.background = cfg.color;
+  gb.style.boxShadow = `0 4px 24px ${cfg.glow}`;
+
+  // show/hide
+  document.getElementById('no-sel').style.display = 'none';
+  document.getElementById('form-area').style.display = 'block';
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('loader').style.display = 'none';
+
+  document.getElementById('topic-in').focus();
+}
+
+async function generate() {
+  if (!curP) { showToast('Pick a platform first!', true); return; }
+  const topic = document.getElementById('topic-in').value.trim();
+  const tone = document.getElementById('tone-sel').value;
+  const extra = document.getElementById('extra-in').value.trim();
+  const apiKey = document.getElementById('hidden-api').value.trim();
+
+  if (!topic) { showToast('Enter a topic first!', true); return; }
+
+  const cfg = PLATFORM[curP];
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  document.getElementById('gen-txt').textContent = 'Generating...';
+  document.getElementById('loader').style.display = 'flex';
+  document.getElementById('spin-ring').style.borderTopColor = cfg.color;
+  document.getElementById('results').style.display = 'none';
+
+  const msgs = {
+    yt:'Analyzing YouTube algorithm...',
+    fb:'Crafting engaging Facebook content...',
+    ig:'Designing scroll-stopping Instagram post...',
+    tt:'Finding viral TikTok angles...',
+    tw:'Writing punchy tweets...'
+  };
+  document.getElementById('loader-msg').textContent = msgs[curP];
+
+  const prompts = {
+    yt: `You are a YouTube SEO expert. Topic:"${topic}", Tone:${tone}, Audience:${extra||'general'}.
+Return ONLY valid JSON, no markdown:
+{"titles":["5 viral titles"],"thumbnails":["3 thumbnail concept descriptions"],"description":"full SEO description with intro timestamps hashtags","script":"script outline string with bullets Hook/Intro/Points/CTA/Outro","tags":["20 seo tag strings"]}`,
+    fb: `You are a Facebook content strategist. Topic:"${topic}", Tone:${tone}, Audience:${extra||'general'}.
+Return ONLY valid JSON, no markdown:
+{"hooks":["5 opening hook lines"],"ideas":["3 content format ideas"],"caption":"full facebook post with emojis line breaks CTA","comments":["3 engagement questions"],"hashtags":["8 hashtags with # prefix"]}`,
+    ig: `You are an Instagram growth expert. Topic:"${topic}", Tone:${tone}, Niche:${extra||'general'}.
+Return ONLY valid JSON, no markdown:
+{"captions":["4 short caption variations"],"ideas":["3 reel/post visual ideas"],"fullCaption":"full caption with hook emojis CTA","bio":"bio link CTA under 150 chars","hashtags":["25 hashtags with # prefix"]}`,
+    tt: `You are a TikTok viral content expert. Topic:"${topic}", Tone:${tone}, Style:${extra||'general'}.
+Return ONLY valid JSON, no markdown:
+{"hooks":["5 first-3-sec hook lines"],"concepts":["3 video concept ideas"],"caption":"punchy tiktok caption with emojis under 300 chars","sounds":["3 music mood suggestions"],"hashtags":["15 hashtags with # prefix"]}`,
+    tw: `You are a Twitter/X growth expert. Topic:"${topic}", Tone:${tone}, Length:${extra||'5 tweets'}.
+Return ONLY valid JSON, no markdown:
+{"tweets":["5 tweet variations under 280 chars each"],"thread":"full numbered thread string 1/ 2/ etc","replies":["3 reply-bait questions"],"hashtags":["8 hashtags with # prefix"]}`
+  };
+
+  try {
+    const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+apiKey,
+        'Content-Type':'application/json',
+        'HTTP-Referer':window.location.href,
+        'X-Title':'SocialGenius AI'
+      },
+      body: JSON.stringify({
+        model:'openai/gpt-4o-mini',
+        messages:[
+          {role:'system',content:'Return ONLY valid JSON. No markdown. No backticks. No preamble.'},
+          {role:'user',content:prompts[curP]}
+        ],
+        temperature:0.75
+      })
+    });
+    if (!res.ok) throw new Error('API error '+res.status);
+    const data = await res.json();
+    let raw = data.choices[0].message.content;
+    raw = raw.replace(/```json/g,'').replace(/```/g,'').trim();
+    const d = JSON.parse(raw);
+    populate(curP, d, cfg);
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    // show correct result block
+    ['yt','fb','ig','tt','tw'].forEach(p => document.getElementById('res-'+p).style.display = p===curP?'block':'none');
+    document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e) {
+    console.error(e);
+    showToast('Error: '+e.message, true);
+    document.getElementById('loader').style.display = 'none';
+  } finally {
+    btn.disabled = false;
+    document.getElementById('gen-txt').textContent = cfg.btnTxt;
+  }
+}
+
+function populate(p, d, cfg) {
+  const c = cfg.color;
+  if (p==='yt') {
+    renderList('yt-titles', d.titles||[], c);
+    renderIdeas('yt-thumbs', d.thumbnails||[], c);
+    setTA('yt-script', d.script||'');
+    setTA('yt-desc', d.description||'');
+    const tags = d.tags||[];
+    document.getElementById('yt-tags-raw').value = tags.join(', ');
+    const tw = document.getElementById('yt-tags'); tw.innerHTML='';
+    tags.forEach(t => { const s=document.createElement('span'); s.className='tag'; s.textContent=t; s.onclick=()=>cp(t); tw.appendChild(s); });
+  } else if (p==='fb') {
+    renderList('fb-hooks', d.hooks||[], c);
+    renderIdeas('fb-ideas', d.ideas||[], c);
+    setTA('fb-coms', (d.comments||[]).join('\n\n'));
+    setTA('fb-cap', d.caption||'');
+    charInfo('fb-char', (d.caption||'').length, 63206);
+    renderHash('fb-hash', d.hashtags||[], c);
+  } else if (p==='ig') {
+    renderList('ig-caps', d.captions||[], c);
+    renderIdeas('ig-ideas', d.ideas||[], c);
+    setTA('ig-bio', d.bio||'');
+    setTA('ig-full', d.fullCaption||'');
+    charInfo('ig-char', (d.fullCaption||'').length, 2200);
+    renderHash('ig-hash', d.hashtags||[], c);
+  } else if (p==='tt') {
+    renderList('tt-hooks', d.hooks||[], c);
+    renderIdeas('tt-concepts', d.concepts||[], c);
+    setTA('tt-sounds', Array.isArray(d.sounds)?d.sounds.join('\n\n'):(d.sounds||''));
+    setTA('tt-cap', d.caption||'');
+    charInfo('tt-char', (d.caption||'').length, 2200);
+    renderHash('tt-hash', d.hashtags||[], c);
+  } else if (p==='tw') {
+    renderList('tw-tweets', d.tweets||[], c);
+    setTA('tw-thread', d.thread||'');
+    setTA('tw-replies', Array.isArray(d.replies)?d.replies.join('\n\n'):(d.replies||''));
+    renderHash('tw-hash', d.hashtags||[], c);
+  }
+  // update dot colors
+  document.querySelectorAll('.dot').forEach(d => d.style.background = c);
+  document.querySelectorAll('.hash-item').forEach(h => h.style.color = c);
+}
+
+function renderList(id, arr, color) {
+  const el = document.getElementById(id); el.innerHTML='';
+  arr.forEach(item => {
+    const d = document.createElement('div'); d.className='list-item';
+    d.innerHTML=`<span>${item}</span><i class="fa-regular fa-copy ci"></i>`;
+    d.onclick=()=>cp(item); el.appendChild(d);
+  });
+}
+
+function renderIdeas(id, arr, color) {
+  const el = document.getElementById(id); el.innerHTML='';
+  arr.forEach((item,i) => {
+    const d = document.createElement('div'); d.className='idea-item';
+    d.innerHTML=`<div class="idea-num" style="color:${color}">Option ${i+1}</div><div>${item}</div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderHash(id, arr, color) {
+  const el = document.getElementById(id); el.innerHTML='';
+  arr.forEach(tag => {
+    const d = document.createElement('div'); d.className='hash-item';
+    d.textContent=tag; d.style.color=color;
+    d.onclick=()=>cp(tag); el.appendChild(d);
+  });
+}
+
+function setTA(id, val) { const e=document.getElementById(id); if(e) e.value=val; }
+
+function charInfo(id, len, max) {
+  const e = document.getElementById(id); if(!e) return;
+  e.textContent = len.toLocaleString()+' / '+max.toLocaleString()+' characters';
+  e.className = 'char-info'+(len>max?' over':len>max*0.85?' warn':'');
+}
+
+function cta(id) { const e=document.getElementById(id); if(e){ navigator.clipboard.writeText(e.value); showToast('Copied!'); } }
+function ctaTagsRaw(id) { const e=document.getElementById(id); if(e){ navigator.clipboard.writeText(e.value); showToast('All tags copied!'); } }
+function ctaHash(id) {
+  const e=document.getElementById(id); if(!e) return;
+  const text=Array.from(e.querySelectorAll('.hash-item')).map(x=>x.textContent).join(' ');
+  navigator.clipboard.writeText(text); showToast('Hashtags copied!');
+}
+function cp(t) { navigator.clipboard.writeText(t); showToast('Copied!'); }
+
+function showToast(msg, isErr=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.background=isErr?'#ef4444':'#10b981';
+  t.classList.add('show'); clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
