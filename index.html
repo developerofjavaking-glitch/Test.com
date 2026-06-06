@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Neon Tic-Tac-Toe</title>
+    
+    <!-- ADSTERRA POPUNDER AD -->
+    <script src="https://pl29644923.effectivecpmnetwork.com/f0/d0/4d/f0d04dcb2cc728362df760af0b04cc69.js"></script>
+    
+    <!-- ADSTERRA SOCIAL BAR AD -->
+    <script src="https://pl29644924.effectivecpmnetwork.com/17/c3/a7/17c3a7589ce43b71467021550bed1f48.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --container-bg: #1f2833;
+            --neon-cyan: #66fcf1;
+            --neon-pink: #ff007f;
+            --text-color: #c5c6c7;
+            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            margin-bottom: 5px;
+        }
+
+        /* Layout Structure */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            gap: 20px;
+        }
+
+        /* Ad Sections */
+        .ad-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        /* Game Controls */
+        .controls {
+            background: var(--container-bg);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid rgba(102, 252, 241, 0.2);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--neon-cyan);
+        }
+
+        select, button {
+            background: #0b0c10;
+            color: #fff;
+            border: 1px solid var(--neon-cyan);
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        select:focus, button:hover {
+            box-shadow: 0 0 10px var(--neon-cyan);
+            background: rgba(102, 252, 241, 0.1);
+        }
+
+        .smart-link-btn {
+            background: linear-gradient(45deg, var(--neon-pink), #ff0055);
+            border: none;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            padding: 12px;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .smart-link-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.8);
+        }
+
+        /* Status Display */
+        .status {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            min-height: 30px;
+            color: #fff;
+        }
+
+        /* Game Board */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
+        }
+
+        .cell {
+            background: var(--container-bg);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .cell:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        /* X and O Styles */
+        .cell.x {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+            animation: popIn 0.3s ease;
+        }
+
+        .cell.o {
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+            animation: popIn 0.3s ease;
+        }
+
+        .cell.winning {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.05);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @media (max-width: 500px) {
+            .board {
+                grid-template-columns: repeat(3, 85px);
+                grid-template-rows: repeat(3, 85px);
+            }
+            .cell {
+                font-size: 2rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>NEON TIC-TAC-TOE</h1>
+    </header>
+
+    <!-- ADSTERRA TOP BANNER (728x90 or adaptive responsive banner) -->
+    <div class="ad-wrapper">
+        <script>
+            atOptions = {
+                'key' : '716f86d996de950740eca539a9e61880',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728,
+                'params' : {}
+            };
+        </script>
+        <script src="https://www.highperformanceformat.com/716f86d996de950740eca539a9e61880/invoke.js"></script>
+    </div>
+
+    <div class="main-container">
+        
+        <!-- Game Settings Panel -->
+        <div class="controls">
+            <div class="control-group">
+                <label for="gameMode">Game Mode</label>
+                <select id="gameMode">
+                    <option value="ai">vs Computer AI</option>
+                    <option value="pvp">Local 2 Players</option>
+                </select>
+            </div>
+
+            <div class="control-group" id="difficultyGroup">
+                <label for="difficulty">AI Difficulty</label>
+                <select id="difficulty">
+                    <option value="easy">Easy (Relaxed)</option>
+                    <option value="medium">Medium (Challenging)</option>
+                    <option value="unbeatable" selected>Hard (Unbeatable Minimax)</option>
+                </select>
+            </div>
+
+            <button id="resetBtn">Restart Game</button>
+            
+            <!-- ADSTERRA SMART LINK (Presented as an engaging offer button) -->
+            <a href="https://www.effectivecpmnetwork.com/jm8fd1svf0?key=5e666a1fe765105ec205d34b4611c75a" target="_blank" class="smart-link-btn">
+                🎁 Claim Free Game Bonuses!
+            </a>
+        </div>
+
+        <div class="status" id="statusDisplay">Your Turn (X)</div>
+
+        <!-- The Tic Tac Toe Grid -->
+        <div class="board" id="gameBoard">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
+
+        <!-- ADSTERRA NATIVE BANNER -->
+        <div class="ad-wrapper">
+            <script async="async" data-cfasync="false" src="https://pl29644925.effectivecpmnetwork.com/278e2b261f4ff235cb3bf7feef2de640/invoke.js"></script>
+            <div id="container-278e2b261f4ff235cb3bf7feef2de640"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Web Audio Engine (Synthetic Sound FX) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            // Resume context if browser blocked it initially due to lack of user gesture
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'x') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.12);
+            } else if (type === 'o') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
+                osc.frequency.exponentialRampToValueAtTime(293.66, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'win') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                osc.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.4); // C6
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.5);
+            } else if (type === 'tie') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        // --- Game Logic ---
+        const board = document.getElementById('gameBoard');
+        const cells = document.querySelectorAll('.cell');
+        const statusDisplay = document.getElementById('statusDisplay');
+        const resetBtn = document.getElementById('resetBtn');
+        const gameModeSelect = document.getElementById('gameMode');
+        const difficultySelect = document.getElementById('difficulty');
+        const difficultyGroup = document.getElementById('difficultyGroup');
+
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+        let isGameActive = true;
+        let currentPlayer = "X"; // User is always X, AI/Player2 is O
+
+        const winningConditions = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
+        ];
+
+        // Toggle visibility of AI options based on Game Mode selection
+        gameModeSelect.addEventListener('change', () => {
+            if (gameModeSelect.value === 'pvp') {
+                difficultyGroup.style.display = 'none';
+            } else {
+                difficultyGroup.style.display = 'flex';
+            }
+            handleRestartGame();
+        });
+
+        function handleCellClick(e) {
+            const clickedCell = e.target;
+            const clickedCellIndex = parseInt(clickedCell.getAttribute('data-index'));
+
+            if (gameState[clickedCellIndex] !== "" || !isGameActive) {
+                return;
+            }
+
+            // User turn
+            makeMove(clickedCellIndex, currentPlayer);
+            
+            if (isGameActive && gameModeSelect.value === 'ai') {
+                // Lock board briefly for AI thinking lag
+                isGameActive = false; 
+                statusDisplay.innerText = "Computer is thinking...";
+                setTimeout(aiTurn, 400); 
+            }
+        }
+
+        function makeMove(index, player) {
+            gameState[index] = player;
+            cells[index].innerText = player;
+            cells[index].classList.add(player.toLowerCase());
+            playSound(player.toLowerCase());
+
+            checkResult();
+
+            if (isGameActive) {
+                currentPlayer = currentPlayer === "X" ? "O" : "X";
+                if (gameModeSelect.value === 'pvp') {
+                    statusDisplay.innerText = `Player ${currentPlayer}'s Turn`;
+                } else {
+                    statusDisplay.innerText = currentPlayer === "X" ? "Your Turn (X)" : "Computer's Turn (O)";
+                }
+            }
+        }
+
+        function checkResult() {
+            let roundWon = false;
+            let winningLine = [];
+
+            for (let i = 0; i < winningConditions.length; i++) {
+                const winCondition = winningConditions[i];
+                let a = gameState[winCondition[0]];
+                let b = gameState[winCondition[1]];
+                let c = gameState[winCondition[2]];
+                
+                if (a === '' || b === '' || c === '') {
+                    continue;
+                }
+                if (a === b && b === c) {
+                    roundWon = true;
+                    winningLine = winCondition;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                isGameActive = false;
+                winningLine.forEach(index => cells[index].classList.add('winning'));
+                
+                if (gameModeSelect.value === 'ai') {
+                    statusDisplay.innerText = currentPlayer === "X" ? "🎉 You Won!" : "🤖 Computer Won!";
+                } else {
+                    statusDisplay.innerText = `🎉 Player ${currentPlayer} Wins!`;
+                }
+                playSound('win');
+                return;
+            }
+
+            let roundDraw = !gameState.includes("");
+            if (roundDraw) {
+                statusDisplay.innerText = "It's a Draw! 🤝";
+                isGameActive = false;
+                playSound('tie');
+                return;
+            }
+        }
+
+        // --- Artificial Intelligence Strategies ---
+        function aiTurn() {
+            if (!gameState.includes("")) { return; }
+            
+            const mode = difficultySelect.value;
+            let bestMove;
+
+            if (mode === 'easy') {
+                bestMove = getRandomMove();
+            } else if (mode === 'medium') {
+                // 50% chance optimal, 50% chance random
+                bestMove = Math.random() > 0.5 ? getBestMoveMinimax() : getRandomMove();
+            } else {
+                bestMove = getBestMoveMinimax();
+            }
+
+            isGameActive = true; 
+            makeMove(bestMove, "O");
+        }
+
+        function getRandomMove() {
+            let emptyCells = [];
+            for (let i = 0; i < gameState.length; i++) {
+                if (gameState[i] === "") emptyCells.push(i);
+            }
+            return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        }
+
+        function getBestMoveMinimax() {
+            let bestScore = -Infinity;
+            let move;
+            for (let i = 0; i < 9; i++) {
+                if (gameState[i] === "") {
+                    gameState[i] = "O";
+                    let score = minimax(gameState, 0, false);
+                    gameState[i] = "";
+                    if (score > bestScore) {
+                        bestScore = score;
+                        move = i;
+                    }
+                }
+            }
+            return move;
+        }
+
+        // Minimax Algorithm for unbeatable mode
+        function minimax(state, depth, isMaximizing) {
+            let result = evaluateBoard(state);
+            if (result !== null) {
+                if (result === "O") return 10 - depth;
+                if (result === "X") return depth - 10;
+                return 0;
+            }
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (state[i] === "") {
+                        state[i] = "O";
+                        let score = minimax(state, depth + 1, false);
+                        state[i] = "";
+                        bestScore = Math.max(score, bestScore);
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (state[i] === "") {
+                        state[i] = "X";
+                        let score = minimax(state, depth + 1, true);
+                        state[i] = "";
+                        bestScore = Math.min(score, bestScore);
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function evaluateBoard(state) {
+            for (let i = 0; i < winningConditions.length; i++) {
+                const [a, b, c] = winningConditions[i];
+                if (state[a] && state[a] === state[b] && state[a] === state[c]) {
+                    return state[a];
+                }
+            }
+            if (!state.includes("")) return "draw";
+            return null;
+        }
+
+        function handleRestartGame() {
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            isGameActive = true;
+            currentPlayer = "X";
+            statusDisplay.innerText = gameModeSelect.value === 'ai' ? "Your Turn (X)" : "Player X's Turn";
+            cells.forEach(cell => {
+                cell.innerText = "";
+                cell.className = "cell";
+            });
+        }
+
+        // Hook up event listeners
+        cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+        resetBtn.addEventListener('click', handleRestartGame);
+    </script>
+</body>
+</html>
