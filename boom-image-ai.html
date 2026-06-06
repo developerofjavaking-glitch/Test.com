@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOOM AI - Pro Image Gen</title>
+    
+    <!-- Adsterra Popunder -->
+    <script src="https://pl29644923.effectivecpmnetwork.com/f0/d0/4d/f0d04dcb2cc728362df760af0b04cc69.js"></script>
+    <!-- Adsterra Social Bar -->
+    <script src="https://pl29644924.effectivecpmnetwork.com/17/c3/a7/17c3a7589ce43b71467021550bed1f48.js"></script>
+
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #9d50bb;
+            --bg: #05070a;
+        }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        h1 { font-size: 2.5rem; background: linear-gradient(to right, #00d2ff, #9d50bb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        
+        .key-section {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        input, textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px;
+            color: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        .btn-boom {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-boom:hover { opacity: 0.9; transform: scale(0.98); }
+        
+        .result-box {
+            margin-top: 20px;
+            min-height: 200px;
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        img { max-width: 100%; border-radius: 10px; display: none; }
+        
+        /* Ad Spaces */
+        .ad-slot { margin: 20px 0; width: 100%; display: flex; justify-content: center; }
+        .smart-link { color: var(--primary); text-decoration: none; font-size: 14px; margin-top: 10px; display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Top Adsterra Banner -->
+    <div class="ad-slot">
+        <script type="text/javascript">
+            atOptions = { 'key' : '716f86d996de950740eca539a9e61880', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+        </script>
+        <script type="text/javascript" src="https://www.highperformanceformat.com/716f86d996de950740eca539a9e61880/invoke.js"></script>
+    </div>
+
+    <div class="container">
+        <h1>BOOM AI</h1>
+        
+        <!-- API Key Input (Safe for GitHub) -->
+        <div class="key-section">
+            <label>Enter OpenRouter API Key:</label>
+            <input type="password" id="apiKey" placeholder="sk-or-v1-xxxx...">
+        </div>
+
+        <textarea id="prompt" placeholder="Describe your image..."></textarea>
+        <button id="genBtn" class="btn-boom">BOOM! GENERATE</button>
+        
+        <a href="https://www.effectivecpmnetwork.com/jm8fd1svf0?key=5e666a1fe765105ec205d34b4611c75a" class="smart-link">Get Free Premium Credits ✨</a>
+
+        <div class="result-box" id="resultBox">
+            <p id="loadingText" style="display:none;">Creating Magic...</p>
+            <img id="outImg">
+        </div>
+        
+        <a id="dlBtn" style="display:none; color: #10b981; margin-top: 10px; text-decoration:none; font-weight:bold;" download="boom.png">Download Image</a>
+    </div>
+
+    <!-- Native Ad -->
+    <div class="ad-slot">
+        <script async="async" data-cfasync="false" src="https://pl29644925.effectivecpmnetwork.com/278e2b261f4ff235cb3bf7feef2de640/invoke.js"></script>
+        <div id="container-278e2b261f4ff235cb3bf7feef2de640"></div>
+    </div>
+
+    <script>
+        const genBtn = document.getElementById('genBtn');
+        const outImg = document.getElementById('outImg');
+        const loader = document.getElementById('loadingText');
+
+        // Automatically load key if saved in browser
+        window.onload = () => {
+            const savedKey = localStorage.getItem('user_api_key');
+            if(savedKey) document.getElementById('apiKey').value = savedKey;
+        };
+
+        genBtn.addEventListener('click', async () => {
+            const key = document.getElementById('apiKey').value;
+            const prompt = document.getElementById('prompt').value;
+            
+            if(!key || !prompt) return alert("Please enter both API Key and Prompt!");
+            
+            // Save key locally so user doesn't have to re-type
+            localStorage.setItem('user_api_key', key);
+
+            loader.style.display = 'block';
+            outImg.style.display = 'none';
+            genBtn.disabled = true;
+
+            try {
+                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${key}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "x-ai/grok-imagine-image-quality",
+                        messages: [{ role: "user", content: prompt }],
+                        modalities: ["image"]
+                    })
+                });
+
+                const data = await res.json();
+                const url = data.choices[0].message.images[0].image_url.url;
+                
+                outImg.src = url;
+                outImg.style.display = 'block';
+                document.getElementById('dlBtn').style.display = 'block';
+                document.getElementById('dlBtn').href = url;
+            } catch (e) {
+                alert("Error: Check your API Key or Balance.");
+            } finally {
+                loader.style.display = 'none';
+                genBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+  </html>
